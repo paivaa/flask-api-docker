@@ -1,7 +1,12 @@
 # flask-api-docker
 
+Realizar o clone do repositório.
 
-abrir prompt de comando e colar o código:
+Via CLI, entrar na pasta flask-api-docker e colar (sem as aspas):
+
+" docker build -t <NOME DE SUA PREFERÊNCIA> . "
+
+Ainda no prompt de comando, colar o código:
 
 docker run -p 5000:5000 python-flaskapi
 
