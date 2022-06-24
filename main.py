@@ -1,38 +1,56 @@
-from flask import Flask, Response, request
-from flask_sqlalchemy import SQLAlchemy
-import mysql.connector
-import json
+from flask import request, url_for
+from flask_api import FlaskAPI, status, exceptions
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://sql10501808:HxSxbNyPdx@sql10.freesqldatabase.com:3306/sql10501808'
-db = SQLAlchemy(app)
-
-class Usuarios(db.Model):
-    id = db.Column(db.Integer, primary_key= True)
-    nome = db.Column(db.String(50))
-    email = db.Column(db.String(100))
-
-    def to_json(self):
-        return {"id": self.id, "nome": self.nome, "email": self.email}
+app = FlaskAPI(__name__)
 
 
-# Retorna tudo o que tiver na tabela usuarios
-@app.route("/usuarios", methods=["GET"])
-def seleciona_usuarios():
-    usuarios_objetos = Usuarios.query.all()
-    usuarios_json = [usuario.to_json() for usuario in usuarios_objetos]
+notes = {
+    0: 'do the shopping',
+    1: 'build the codez',
+    2: 'paint the door',
+}
 
-    return gera_response(200, "usuarios", usuarios_json)
-
-def gera_response(status, nome_do_conteudo, conteudo, mensagem=False):
-    body = {}
-    body[nome_do_conteudo] = conteudo
-
-    if(mensagem):
-        body["mensagem"] = mensagem
-
-    return Response(json.dumps(body), status=status, mimetype="application/json")
+def note_repr(key):
+    return {
+        'url': request.host_url.rstrip('/') + url_for('notes_detail', key=key),
+        'text': notes[key]
+    }
 
 
-app.run()
+@app.route("/", methods=['GET', 'POST'])
+def notes_list():
+    """
+    List or create notes.
+    """
+    if request.method == 'POST':
+        note = str(request.data.get('text', ''))
+        idx = max(notes.keys()) + 1
+        notes[idx] = note
+        return note_repr(idx), status.HTTP_201_CREATED
+
+    # request.method == 'GET'
+    return [note_repr(idx) for idx in sorted(notes.keys())]
+
+
+@app.route("/<int:key>/", methods=['GET', 'PUT', 'DELETE'])
+def notes_detail(key):
+    """
+    Retrieve, update or delete note instances.
+    """
+    if request.method == 'PUT':
+        note = str(request.data.get('text', ''))
+        notes[key] = note
+        return note_repr(key)
+
+    elif request.method == 'DELETE':
+        notes.pop(key, None)
+        return '', status.HTTP_204_NO_CONTENT
+
+    # request.method == 'GET'
+    if key not in notes:
+        raise exceptions.NotFound()
+    return note_repr(key)
+
+
+if __name__ == "__main__":
+    app.run(debug=True, port=5000, host="0.0.0.0")
