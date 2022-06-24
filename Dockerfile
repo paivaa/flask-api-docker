@@ -1,10 +1,10 @@
-FROM python:3.8
+FROM python:3.8-slim
 
-WORKDIR /flask-mysql-app
+WORKDIR /flask-api-app
 
 COPY requirements.txt .
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
 COPY ./app ./app
 
