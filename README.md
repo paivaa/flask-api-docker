@@ -1,20 +1,16 @@
-# flask-api-docker
+# Flask-api-docker
 
-Realizar o clone do repositório.
+Realizar o clone do repositório. Via CLI, entrar na pasta flask-api-docker e colar (sem as aspas):
 
-Via CLI, entrar na pasta flask-api-docker e colar (sem as aspas):
-
-" docker build -t <NOME DE SUA PREFERÊNCIA> . "
+> " docker build -t <NOME DE SUA PREFERÊNCIA> . "
 
 Ainda no prompt de comando, colar o código:
 
-docker run -p 5000:5000 python-flaskapi
+> docker run -p 5000:5000 python-flaskapi
 
-apertar ENTER
+Ir ao navegador, copiar e colar: http://127.0.0.1:5000/
 
-ir no navegador e botar: http://127.0.0.1:5000/
-
-irá retornar uma lista com três registros contendo: indice, uma frase associada ao indice e sua respectiva url:
+Aparecerá em uma interface, uma lista com três registros contendo: indice, uma frase associada ao indice e sua respectiva url.
 
    "url": "http://127.0.0.1:5000/0/",
     0: 'do the shopping',
